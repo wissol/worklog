@@ -6,7 +6,8 @@ by Miguel de Luis
 Started on 260816
 
 """
-#
+# import csv
+# from datetime import datetime
 from sys import exit
 
 # constants
