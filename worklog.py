@@ -28,7 +28,7 @@ MENU_KEYS = sorted(MENU_CHOICES)
 # Classes
 
 class Task():
-    def __init__(self, person, description, time_spent, notes, task_date):
+    def __init__(self, description, time_spent, notes, task_date):
         """
         Creates a task entry
 
@@ -52,8 +52,28 @@ def do_stuff_a():
     print("stuff a")
 
 
+def input_task_notes(task_notes):
+    """
+    Generates a collection with all the notes associated to a task
+    :param task_notes: [string]
+    :return: [string]
+    """
+    my_note = input("Add a note for this task, if any or hit enter to end adding notes:> ")
+    if not my_note:
+        return task_notes
+    else:
+        task_notes.append(my_note)
+        print(task_notes)
+        return input_task_notes(task_notes)
+
+
 def add_entry():
-    print("add entry")
+    task_description = input("Task Description:> ")
+    time_spent = input("Enter time spent, in minutes")
+    task_notes = input_task_notes([])
+
+    print(task_description)
+    print(task_notes)
 
 
 def search_entries():
@@ -67,14 +87,8 @@ def edit_entry():
 def delete_entry():
     print("delete entry")
 
-
-def quit_program():
-    print("quit program")
-    exit()
-
-
 MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "e": edit_entry,
-                  "d": delete_entry, "q": quit_program, "s": do_stuff_a}
+                  "d": delete_entry, "q": exit, "s": do_stuff_a}
 
 
 def ask_for_choice(error_message):
