@@ -1,6 +1,6 @@
 # As an user of the script... 
 
-* I should be able to choose whether to add a new entry or lookup previous entries.
+* I should be able to choose whether to add a new entry or lookup previous entries. --- done 
 
 * if I choose to enter a new work log, I should be able to provide a task name, a number of minutes spent working on it, and any additional notes I want to record.
 
@@ -18,7 +18,7 @@
 
 * I should be able to find entries within a range of time spent on a task.
 
-* I should be able to delete or edit entries.
+* I should be able to delete or edit entries.*
 
 * I should be able to quit the script from the menu.
 
