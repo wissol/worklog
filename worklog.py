@@ -44,7 +44,10 @@ class Task():
 
 
 def clear_screen():
-    """ Treehouse code from battleship """
+    """ Treehouse code from battleship
+    033 = ESC so this is <ESC> + c -> clear terminal
+    found on http://askubuntu.com/questions/25077/how-to-really-clear-the-terminal
+    """
     print("\033c", end="")
 
 
@@ -63,17 +66,22 @@ def input_task_notes(task_notes):
         return task_notes
     else:
         task_notes.append(my_note)
-        print(task_notes)
         return input_task_notes(task_notes)
 
 
 def add_entry():
+    """
+    Adds an entry
+    :return:
+    """
     task_description = input("Task Description:> ")
     time_spent = input("Enter time spent, in minutes")
     task_notes = input_task_notes([])
 
     print(task_description)
     print(task_notes)
+
+    # update worklog file
 
 
 def search_entries():
