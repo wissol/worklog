@@ -56,7 +56,7 @@ def clear_screen():
     print("\033c", end="\v")  # adding some white spacea
 
 
-def get_date():
+def get_task_date():
     """
     generates date from datetime
     :return: string ... "dd/mm/yyyy"
@@ -125,7 +125,7 @@ def add_entry():
     task_description = input("Task Description:> ")
     time_spent = input_time_spent("")
     task_notes = input_task_notes([])
-    task_date = get_date()
+    task_date = get_task_date()
 
     print(task_description)
     print(time_spent)
