@@ -6,7 +6,7 @@ by Miguel de Luis
 Started on 260816
 
 """
-# import csv
+import csv
 # from datetime import datetime
 from sys import exit
 
@@ -28,7 +28,7 @@ MENU_KEYS = sorted(MENU_CHOICES)
 # Classes
 
 class Task():
-    def __init__(self, description, time_spent, notes, task_date):
+    def __init__(self, description, time_spent, notes, task_date, task_id):
         """
         Creates a task entry
 
@@ -41,7 +41,10 @@ class Task():
         self.time_spent = time_spent
         self.notes = notes
         self.task_date = task_date
+        self.task_id = task_id
 
+
+# Auxiliary Functions
 
 def clear_screen():
     """ Treehouse code from battleship
@@ -51,18 +54,20 @@ def clear_screen():
     print("\033c", end="\v")  # adding some white spacea
 
 
+# User Input and Validation
+
 def input_task_notes(task_notes):
     """
     Generates a collection with all the notes associated to a task
     :param task_notes: [string]
     :return: [string]
     """
-    my_note = input("Add a note for this task, if any or hit enter to end adding notes:> ")
-    if not my_note:
-        return task_notes
-    else:
-        task_notes.append(my_note)
-        return input_task_notes(task_notes)
+    return input("Add a note for this task, if any or hit enter to end adding notes:> ")
+    # if not my_note:
+    #     return task_notes
+    # else:
+    #     task_notes.append(my_note)
+    #     return input_task_notes(task_notes)
 
 
 def input_time_spent(validation_message):
@@ -85,6 +90,23 @@ def input_time_spent(validation_message):
     else:
         return input_time_spent(validation_message="\aPlease use only whole numbers")
 
+
+# File Functions
+
+def append_task_to_log(task_entry):
+    """
+
+    :param task_entry:
+    :return:
+    """
+    print(task_entry)
+    with open(WORK_LOG_FILE_NAME, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(task_entry)
+
+
+# Command Functions
+
 def add_entry():
     """
     Adds an entry
@@ -97,6 +119,8 @@ def add_entry():
     print(task_description)
     print(time_spent)
     print(task_notes)
+
+    append_task_to_log([task_description, time_spent, task_notes])
 
     # update worklog file
 
