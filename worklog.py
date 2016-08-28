@@ -7,13 +7,15 @@ Started on 260816
 
 """
 import csv
-# from datetime import datetime
+from datetime import date
 from sys import exit
 
 # constants
 
+DATE_FORMAT = "%d/%m/%Y"
 
-WORK_LOG_FILE_NAME = "work_log.csv"
+DEVELOPING = True
+WORK_LOG_FILE_NAME = "work_log_developing.csv" if DEVELOPING else "work_log.csv"
 
 MENU_CHOICES = {"a": "add entry", "f": "search entries", "e": "edit entry",
                 "d": "delete entry", "q": "quit"}
@@ -28,7 +30,7 @@ MENU_KEYS = sorted(MENU_CHOICES)
 # Classes
 
 class Task():
-    def __init__(self, description, time_spent, notes, task_date, task_id):
+    def __init__(self, description, time_spent, notes, task_date):
         """
         Creates a task entry
 
@@ -41,7 +43,7 @@ class Task():
         self.time_spent = time_spent
         self.notes = notes
         self.task_date = task_date
-        self.task_id = task_id
+
 
 
 # Auxiliary Functions
@@ -54,7 +56,15 @@ def clear_screen():
     print("\033c", end="\v")  # adding some white spacea
 
 
+def get_date():
+    """
+    generates date from datetime
+    :return: string ... "dd/mm/yyyy"
+    """
+    return date.today().strftime(DATE_FORMAT)
+
 # User Input and Validation
+
 
 def input_task_notes(task_notes):
     """
@@ -62,12 +72,12 @@ def input_task_notes(task_notes):
     :param task_notes: [string]
     :return: [string]
     """
-    return input("Add a note for this task, if any or hit enter to end adding notes:> ")
-    # if not my_note:
-    #     return task_notes
-    # else:
-    #     task_notes.append(my_note)
-    #     return input_task_notes(task_notes)
+    my_note = input("Add a note for this task, if any or hit enter to end adding notes:> ")
+    if not my_note:
+        return task_notes
+    else:
+        task_notes.append(my_note)
+        return input_task_notes(task_notes)
 
 
 def input_time_spent(validation_message):
@@ -115,12 +125,13 @@ def add_entry():
     task_description = input("Task Description:> ")
     time_spent = input_time_spent("")
     task_notes = input_task_notes([])
+    task_date = get_date()
 
     print(task_description)
     print(time_spent)
     print(task_notes)
 
-    append_task_to_log([task_description, time_spent, task_notes])
+    append_task_to_log([task_date, task_description, time_spent, task_notes])
 
     # update worklog file
 
