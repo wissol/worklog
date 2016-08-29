@@ -7,7 +7,7 @@ Started on 260816
 
 """
 import csv
-from datetime import date
+from datetime import datetime
 from sys import exit
 
 # constants
@@ -61,9 +61,36 @@ def get_task_date():
     generates date from datetime
     :return: string ... "dd/mm/yyyy"
     """
-    return date.today().strftime(DATE_FORMAT)
+    return datetime.today().strftime(DATE_FORMAT)
+
+
+def show_validation_message(validation_message):
+    if validation_message:
+        print("\a\v\t " + validation_message)
 
 # User Input and Validation
+
+def input_task_date(validation_message):
+    """
+    Ask user for task date, validates,
+    :return: string ... dd/mm/yyyy
+    """
+
+    show_validation_message(validation_message)
+
+    raw_task_date = input("Please enter the date for this task as dd/mm/yyyy or press enter for today:> ") \
+        .replace(" ", "").strip()
+
+    if raw_task_date:
+        try:
+            datetime.strptime(raw_task_date, DATE_FORMAT)
+            # The idea is to use strptime to raise a Value Error if the string provided does not conform to
+            # Date_Format
+            return raw_task_date
+        except ValueError:
+            return input_task_date("Please enter the date as dd/mm/yyyy or just press enter for today")
+    else:
+        return datetime.strftime(datetime.today(), DATE_FORMAT)
 
 
 def input_task_notes(task_notes):
@@ -88,10 +115,9 @@ def input_time_spent(validation_message):
     :return: integer ... total minutes
     """
 
-    if validation_message:
-        print("\v\t " + validation_message)
+    show_validation_message(validation_message)
 
-    raw_time_spent = input("Enter time spent, in minutes:> ")
+    raw_time_spent = input("\vEnter time spent on task, in minutes:> ")
     if raw_time_spent.isnumeric():
         try:
             return int(raw_time_spent)
@@ -125,7 +151,7 @@ def add_entry():
     task_description = input("Task Description:> ")
     time_spent = input_time_spent("")
     task_notes = input_task_notes([])
-    task_date = get_task_date()
+    task_date = input_task_date("")
 
     print(task_description)
     print(time_spent)
