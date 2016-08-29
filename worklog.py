@@ -17,15 +17,6 @@ DATE_FORMAT = "%d/%m/%Y"
 DEVELOPING = True
 WORK_LOG_FILE_NAME = "work_log_developing.csv" if DEVELOPING else "work_log.csv"
 
-MENU_CHOICES = {"a": "add entry", "f": "search entries", "e": "edit entry",
-                "d": "delete entry", "q": "quit"}
-
-"""
-MENU_FUNCTIONS = {char:function_name} will contain the functions called from the menu, yet it's
-declared after those functions have been defined
-"""
-
-MENU_KEYS = sorted(MENU_CHOICES)
 
 # Classes
 
@@ -141,6 +132,52 @@ def append_task_to_log(task_entry):
         writer.writerow(task_entry)
 
 
+# Search Functions
+
+def find_by_date():
+    # show dates with task
+    # ask user for date
+    # validate
+    # search
+    # show a list of date
+    pass
+
+
+def find_by_time_spent():
+    """
+
+    :return:
+    """
+    # ask for user input
+    # validate
+    # search
+    # show list of tasks
+
+
+def find_by_exact_search():
+    """
+
+    :return:
+    """
+    # ask for user input
+    # validate
+    # search
+    # show list of tasks
+
+
+def find_by_pattern():
+    """
+
+    :return:
+    """
+    # ask for user input
+    # validate
+    # search
+    # show list of tasks
+
+
+FIND_MENU_FUNCTIONS = {}
+
 # Command Functions
 
 def add_entry():
@@ -173,8 +210,7 @@ def edit_entry():
 def delete_entry():
     print("delete entry")
 
-MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "e": edit_entry,
-                  "d": delete_entry, "q": exit}
+
 
 
 def ask_for_choice(error_message):
@@ -182,14 +218,20 @@ def ask_for_choice(error_message):
     Shows the main menu, returns the menu option chosen
     :return: string with the option
     """
+    MENU_CHOICES = {"a": "add entry", "f": "search entries", "q": "quit", "h": "help"}
+    MENU_KEYS = sorted(MENU_CHOICES)
 
     clear_screen()
 
+    print("\v")
+
     if error_message:
-        print(error_message)
+        print("\a\t*** {} \v".format(error_message))
 
     for k in MENU_KEYS:
         print(k, MENU_CHOICES[k].title())
+
+    print("\v")
 
     choice = input("Your choice:> ").lower().strip()
 
@@ -199,11 +241,22 @@ def ask_for_choice(error_message):
         return choice
 
 
+def helper():
+    print("To edit or delete an entry you must search it first")
+
+
 def menu():
+    """
+    MENU_FUNCTIONS = {char:function_name} will contain the functions called from the menu, yet it's
+    declared after those functions have been defined
+    """
+
+    MAIN_MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
+
     while True:
         user_choice = ask_for_choice("")
         print(user_choice)
-        MENU_FUNCTIONS[user_choice]()
+        MAIN_MENU_FUNCTIONS[user_choice]()
 
 
 # def main():
@@ -217,3 +270,4 @@ def menu():
 # main()
 
 menu()
+
