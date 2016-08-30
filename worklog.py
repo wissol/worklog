@@ -7,6 +7,7 @@ Started on 260816
 
 """
 import csv
+from ast import literal_eval  # evaluates literal expressions
 from datetime import datetime
 from sys import exit
 
@@ -32,8 +33,21 @@ class Task():
         """
         self.description = description
         self.time_spent = time_spent
-        self.notes = notes
+        self.notes = literal_eval(notes)
         self.task_date = task_date
+
+    def show_task(self):
+        """
+        Shows the Task on Screen
+        :return:
+        """
+        print("Task Date", self.task_date)
+        print("Description", self.description)
+        print("Time Spent", self.time_spent)
+        print("Notes")
+        for note in self.notes:
+            print("*", note)
+        print("\v")
 
 
 
@@ -58,6 +72,21 @@ def get_task_date():
 def show_validation_message(validation_message):
     if validation_message:
         print("\a\v\t " + validation_message)
+
+
+def read_log_file():
+    """
+    reads the log file into a list of Task objects
+    :return: [Task]
+    """
+    with open(WORK_LOG_FILE_NAME, 'r', newline='') as rf:
+        task_log = []
+        reader = csv.reader(rf)
+        for row in reader:
+            this_task = Task(task_date=row[0], description=row[1],
+                             time_spent=row[2], notes=row[3])
+            task_log.append(this_task)
+    return task_log
 
 # User Input and Validation
 
@@ -126,7 +155,6 @@ def append_task_to_log(task_entry):
     :param task_entry:
     :return:
     """
-    print(task_entry)
     with open(WORK_LOG_FILE_NAME, 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(task_entry)
@@ -254,6 +282,9 @@ def menu():
     MAIN_MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
 
     while True:
+        juste_testing = read_log_file()
+        for tasko in juste_testing:
+            tasko.show_task()
         user_choice = ask_for_choice("")
         print(user_choice)
         MAIN_MENU_FUNCTIONS[user_choice]()
