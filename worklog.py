@@ -162,8 +162,25 @@ def append_task_to_log(task_entry):
 
 # Search Functions
 
+def find_dates_with_tasks():
+    tasks = read_log_file()
+    dates_with_tasks = []
+    for t in tasks:
+        if t.task_date not in dates_with_tasks:
+            dates_with_tasks.append(t.task_date)
+    return dates_with_tasks
+
+
+def show_dates_with_tasks():
+    dates_with_tasks = find_dates_with_tasks()
+    print("These are the dates with tasks")
+    for d in dates_with_tasks:
+        print(d)
+
+
 def find_by_date():
     # show dates with task
+    show_dates_with_tasks()
     # ask user for date
     # validate
     # search
@@ -229,6 +246,7 @@ def add_entry():
 
 def search_entries():
     print("search entry")
+    find_by_date()
 
 
 def edit_entry():
@@ -281,10 +299,11 @@ def menu():
 
     MAIN_MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
 
+    juste_testing = read_log_file()
+    for tasko in juste_testing:
+        tasko.show_task()
+
     while True:
-        juste_testing = read_log_file()
-        for tasko in juste_testing:
-            tasko.show_task()
         user_choice = ask_for_choice("")
         print(user_choice)
         MAIN_MENU_FUNCTIONS[user_choice]()
