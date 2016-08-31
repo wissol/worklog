@@ -162,8 +162,7 @@ def append_task_to_log(task_entry):
 
 # Search Functions
 
-def find_dates_with_tasks():
-    tasks = read_log_file()
+def find_dates_with_tasks(tasks):
     dates_with_tasks = []
     for t in tasks:
         if t.task_date not in dates_with_tasks:
@@ -171,22 +170,71 @@ def find_dates_with_tasks():
     return dates_with_tasks
 
 
-def show_dates_with_tasks():
-    dates_with_tasks = find_dates_with_tasks()
-    print("These are the dates with tasks")
-    for d in dates_with_tasks:
-        print(d)
+def show_dates_with_tasks(tasks):
+    dates_with_tasks = find_dates_with_tasks(tasks)
+    if dates_with_tasks:
+        print("These are the dates that have tasks")
+        i = 0
+        for d in dates_with_tasks:
+            print("{}. {}".format(i, d))
+            i += 1
+        return dates_with_tasks
+    else:
+        return None
+
+
+def input_date_to_search(validation_message, total_dates):
+    """
+    Ask for input for the date to choose among those offered
+    :param validation_message:
+    :param total_dates:
+    :return:
+    """
+    show_validation_message(validation_message)
+
+    raw_date_index = input("Please enter the number of the date to search for:> ")
+
+    try:
+        raw_date_index = abs(int(raw_date_index))
+        # I assume nobody would enter a negative number, except by mistfake and as we are only showing information,
+        # there are no major risks
+    except ValueError:
+        return input_date_to_search("Please enter a _number_ of the date to search for:> ", total_dates)
+
+    if raw_date_index > total_dates:
+        return input_date_to_search("Sorry we don't have that date. Choose a smaller number", total_dates)
+    else:
+        return raw_date_index
+
+
 
 
 def find_by_date():
-    # show dates with task
-    show_dates_with_tasks()
-    # ask user for date
-    # validate
-    # search
-    # show a list of date
-    pass
+    """
 
+    :return:
+    """
+    all_tasks = read_log_file()
+    found_tasks = []  # [Task]
+    # show dates with task
+    dates_that_have_tasks = show_dates_with_tasks(all_tasks)
+    # ask user for date
+    if dates_that_have_tasks:
+        date_index = input_date_to_search("", len(dates_that_have_tasks) - 1)
+        date_to_search = dates_that_have_tasks[date_index]
+
+        # validate
+        # search
+        for task_item in all_tasks:
+            if task_item.task_date == date_to_search:
+                found_tasks.append(task_item)
+
+        for found_task in found_tasks:
+            found_task.show_task()
+
+            # show a list of date
+    else:
+        print("Sorry no dates with task have been found.")
 
 def find_by_time_spent():
     """
