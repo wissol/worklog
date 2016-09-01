@@ -265,10 +265,22 @@ def find_by_exact_search():
 
     :return:
     """
+    found_tasks = []
+    string_to_search = input("Enter the exact words that you want to find:> ").strip()
     # ask for user input
-    # validate
+
+    all_tasks = read_log_file()
+
     # search
-    # show list of tasks
+    for task_item in all_tasks:
+        if string_to_search == task_item.description:
+            found_tasks.append(task_item)
+        else:
+            for note in task_item.notes:
+                if string_to_search == note:
+                    found_tasks.append(task_item)
+
+    show_tasks(found_tasks)
 
 
 def find_by_pattern():
