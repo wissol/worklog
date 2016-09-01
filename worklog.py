@@ -89,14 +89,15 @@ def read_log_file():
     return task_log
 
 
-def show_tasks(task_list, unfound_message="Sorry, not tasks to show"):
+def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
     if task_list:
         for task_list_item in task_list:
             task_list_item.show_task()
     else:
-        print(unfound_message)
+        print(not_found_message)
 
 # User Input and Validation
+
 
 def input_task_date(validation_message):
     """
@@ -236,7 +237,7 @@ def find_by_date():
             if task_item.task_date == date_to_search:
                 found_tasks.append(task_item)
 
-        show_tasks(found_tasks, unfound_message="Sorry, no tasks found with that date")
+        show_tasks(found_tasks, not_found_message="Sorry, no tasks found with that date")
 
             # show a list of date
     else:
@@ -254,8 +255,8 @@ def find_by_time_spent():
     all_tasks = read_log_file()
     # search
     for task_item in all_tasks:
-        if time_spent_to_search == task_item.time_spent:
-            found_tasks.append(task_item, unfound_message="Sorry, no tasks found with that time spent")
+        if int(time_spent_to_search) == int(task_item.time_spent):
+            found_tasks.append(task_item)
     # show list of tasks
     show_tasks(found_tasks)
 
@@ -295,10 +296,6 @@ def add_entry():
     task_notes = input_task_notes([])
     task_date = input_task_date("")
 
-    print(task_description)
-    print(time_spent)
-    print(task_notes)
-
     append_task_to_log([task_date, task_description, time_spent, task_notes])
 
     # update worklog file
@@ -306,8 +303,11 @@ def add_entry():
 
 def search_entries():
     print("search entry")
-    find_by_date()
-
+    search_menu_functions = {"p": find_by_pattern, "d": find_by_date, "x": find_by_exact_search,
+                             "t": find_by_time_spent, "m": main}
+    search_menu_items = {"p": "find pattern", "d": "find by date", "x": "find by exact match",
+                         "t": "find by time spent", "m": "back to main menu"}
+    menu(search_menu_functions, search_menu_items)
 
 def edit_entry():
     print("edit_entry")
@@ -317,15 +317,12 @@ def delete_entry():
     print("delete entry")
 
 
-
-
-def ask_for_choice(error_message):
+def ask_for_choice(error_message, menu_choices):
     """
     Shows the main menu, returns the menu option chosen
     :return: string with the option
     """
-    MENU_CHOICES = {"a": "add entry", "f": "search entries", "q": "quit", "h": "help"}
-    MENU_KEYS = sorted(MENU_CHOICES)
+    menu_keys = sorted(menu_choices)
 
     clear_screen()
 
@@ -334,15 +331,15 @@ def ask_for_choice(error_message):
     if error_message:
         print("\a\t*** {} \v".format(error_message))
 
-    for k in MENU_KEYS:
-        print(k, MENU_CHOICES[k].title())
+    for k in menu_keys:
+        print(k, menu_choices[k].title())
 
     print("\v")
 
     choice = input("Your choice:> ").lower().strip()
 
-    if choice not in MENU_KEYS:
-        return ask_for_choice("Sorry, not in menu")
+    if choice not in menu_keys:
+        return ask_for_choice("Sorry, not in menu", menu_choices)
     else:
         return choice
 
@@ -351,33 +348,24 @@ def helper():
     print("To edit or delete an entry you must search it first")
 
 
-def menu():
-    """
-    MENU_FUNCTIONS = {char:function_name} will contain the functions called from the menu, yet it's
-    declared after those functions have been defined
+def menu(menu_functions, menu_items):
     """
 
-    MAIN_MENU_FUNCTIONS = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
-
-    juste_testing = read_log_file()
-    for tasko in juste_testing:
-        tasko.show_task()
-
+    :param menu_functions: dictionary ... menu functions
+    :param menu_items: dictionary ... contains strings with the menu items
+    :return:
+    """
     while True:
-        user_choice = ask_for_choice("")
+        user_choice = ask_for_choice("", menu_items)
         print(user_choice)
-        MAIN_MENU_FUNCTIONS[user_choice]()
+        menu_functions[user_choice]()
 
 
-# def main():
-#     keep_logging = True
-#
-#     while keep_logging:
-#         option = menu()
-#         # do_stuff(option)
-#
-#
-# main()
+def main():
+    main_menu_functions = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
+    main_menu_items = {"a": "add entry", "f": "search entries", "q": "quit", "h": "help"}
 
-menu()
+    menu(main_menu_functions, main_menu_items)
 
+
+main()
