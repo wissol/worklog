@@ -316,9 +316,9 @@ def add_entry():
 def search_entries():
     print("search entry")
     search_menu_functions = {"p": find_by_pattern, "d": find_by_date, "x": find_by_exact_search,
-                             "t": find_by_time_spent, "m": main}
+                             "t": find_by_time_spent, "m": main, "q": quit}
     search_menu_items = {"p": "find pattern", "d": "find by date", "x": "find by exact match",
-                         "t": "find by time spent", "m": "back to main menu"}
+                         "t": "find by time spent", "m": "back to main menu", "q": "quit the script"}
     menu(search_menu_functions, search_menu_items)
 
 def edit_entry():
