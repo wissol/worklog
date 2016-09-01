@@ -88,6 +88,14 @@ def read_log_file():
             task_log.append(this_task)
     return task_log
 
+
+def show_tasks(task_list, error_message="Sorry, not tasks to show"):
+    if task_list:
+        for task_list_item in task_list:
+            task_list_item.show_task()
+    else:
+        print(error_message)
+
 # User Input and Validation
 
 def input_task_date(validation_message):
@@ -147,6 +155,31 @@ def input_time_spent(validation_message):
         return input_time_spent(validation_message="\aPlease use only whole numbers")
 
 
+def input_date_to_search(validation_message, total_dates):
+    """
+    Ask for input for the date to choose among those offered. The rationale for this function is that it's much
+    faster to type an index number than a date.
+    :param validation_message:
+    :param total_dates:
+    :return:
+    """
+    show_validation_message(validation_message)
+
+    raw_date_index = input("Please enter the number of the date to search for:> ")
+
+    try:
+        raw_date_index = abs(int(raw_date_index))
+        # I assume nobody would enter a negative number, except by mistfake and as we are only showing information,
+        # there are no major risks
+    except ValueError:
+        return input_date_to_search("Please enter a _number_ of the date to search for:> ", total_dates)
+
+    if raw_date_index > total_dates:
+        return input_date_to_search("Sorry we don't have that date. Choose a smaller number", total_dates)
+    else:
+        return raw_date_index
+
+
 # File Functions
 
 def append_task_to_log(task_entry):
@@ -183,32 +216,6 @@ def show_dates_with_tasks(tasks):
         return None
 
 
-def input_date_to_search(validation_message, total_dates):
-    """
-    Ask for input for the date to choose among those offered
-    :param validation_message:
-    :param total_dates:
-    :return:
-    """
-    show_validation_message(validation_message)
-
-    raw_date_index = input("Please enter the number of the date to search for:> ")
-
-    try:
-        raw_date_index = abs(int(raw_date_index))
-        # I assume nobody would enter a negative number, except by mistfake and as we are only showing information,
-        # there are no major risks
-    except ValueError:
-        return input_date_to_search("Please enter a _number_ of the date to search for:> ", total_dates)
-
-    if raw_date_index > total_dates:
-        return input_date_to_search("Sorry we don't have that date. Choose a smaller number", total_dates)
-    else:
-        return raw_date_index
-
-
-
-
 def find_by_date():
     """
 
@@ -229,8 +236,7 @@ def find_by_date():
             if task_item.task_date == date_to_search:
                 found_tasks.append(task_item)
 
-        for found_task in found_tasks:
-            found_task.show_task()
+        show_tasks(found_tasks, error_message="Sorry, no tasks found with that date")
 
             # show a list of date
     else:
@@ -241,11 +247,17 @@ def find_by_time_spent():
 
     :return:
     """
+    found_tasks = []
     # ask for user input
     # validate
+    time_spent_to_search = input_time_spent("")
+    all_tasks = read_log_file()
     # search
+    for task_item in all_tasks:
+        if time_spent_to_search == task_item.time_spent:
+            found_tasks.append(task_item, error_message="Sorry, no tasks found with that time spent")
     # show list of tasks
-
+    show_tasks(found_tasks)
 
 def find_by_exact_search():
     """
