@@ -89,12 +89,12 @@ def read_log_file():
     return task_log
 
 
-def show_tasks(task_list, error_message="Sorry, not tasks to show"):
+def show_tasks(task_list, unfound_message="Sorry, not tasks to show"):
     if task_list:
         for task_list_item in task_list:
             task_list_item.show_task()
     else:
-        print(error_message)
+        print(unfound_message)
 
 # User Input and Validation
 
@@ -236,7 +236,7 @@ def find_by_date():
             if task_item.task_date == date_to_search:
                 found_tasks.append(task_item)
 
-        show_tasks(found_tasks, error_message="Sorry, no tasks found with that date")
+        show_tasks(found_tasks, unfound_message="Sorry, no tasks found with that date")
 
             # show a list of date
     else:
@@ -255,7 +255,7 @@ def find_by_time_spent():
     # search
     for task_item in all_tasks:
         if time_spent_to_search == task_item.time_spent:
-            found_tasks.append(task_item, error_message="Sorry, no tasks found with that time spent")
+            found_tasks.append(task_item, unfound_message="Sorry, no tasks found with that time spent")
     # show list of tasks
     show_tasks(found_tasks)
 
