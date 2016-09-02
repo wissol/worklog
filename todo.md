@@ -1,6 +1,6 @@
 # As an user of the script... 
 
-* if finding by a pattern, I should be allowed to enter a regular expression and then be presented with entries matching that pattern in their task name or notes.
+* 
 
 ---
 
@@ -27,3 +27,5 @@ DONE
 6. I should be able to quit the script from the menu.
 
 7. I should be able to navigate through the results of a search.
+
+8. if finding by a pattern, I should be allowed to enter a regular expression and then be presented with entries matching that pattern in their task name or notes.

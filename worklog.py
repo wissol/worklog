@@ -324,10 +324,32 @@ def find_by_pattern():
 
     :return:
     """
+    import re
+    found_tasks = []
+    raw_re_string = input("Enter your Regular Expression pattern")
     # ask for user input
-    # validate
+    compiled_re_string = re.compile(raw_re_string)
+    print(compiled_re_string)
     # search
+    all_tasks = read_log_file()
+
+    for task_item in all_tasks:
+        item_description = task_item.description
+        item_notes = str(task_item.notes).strip("[]").strip("'")  # The list is converted into a string
+
+        if compiled_re_string.search(item_description) or compiled_re_string.search(item_notes):
+            found_tasks.append(task_item)
+
+    # This code would check every attribute of the task class
+    #
+    # for task_item in all_tasks:
+    #     task_item_d = task_item.__dict__
+    #     for key in task_item_d:
+    #         if compiled_re_string.search(str(task_item_d[key])):
+    #             found_tasks.append(task_item)
+
     # show list of tasks
+    show_tasks(found_tasks)
 
 
 FIND_MENU_FUNCTIONS = {}
