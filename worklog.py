@@ -90,9 +90,45 @@ def read_log_file():
 
 
 def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
-    if task_list:
+    def show_all_tasks():
         for task_list_item in task_list:
             task_list_item.show_task()
+
+    def show_next_task(task_index):
+        task_index += 1
+        try:
+            task_list[task_index].show_task()
+            return task_index
+        except:
+            print("\a Sorry, no more tasks to show")
+            task_index -= 1
+            return task_index
+
+    def show_previous_task(task_index):
+        if this_task == 0:
+            print("\a Sorry, this is the first task")
+        else:
+            task_index -= 1
+            task_list[task_index].show_task()
+        return task_index
+
+    if task_list:
+        task_list[0].show_task()
+        this_task = 0
+        option_chosen = input(
+            "Choose n for next task, p for previous tasks, a for all task, m for main menu").strip().lower()
+        while option_chosen != "m":
+            if option_chosen == "n":
+                this_task = show_next_task(this_task)
+            elif option_chosen == "p":
+                this_task = show_previous_task(this_task)
+            elif option_chosen == "a":
+                show_all_tasks()
+            else:
+                print("\a")
+            option_chosen = input(
+                "Choose n for next task, p for previous tasks, a for all task, m for main menu").strip().lower()
+        main()
     else:
         print(not_found_message)
 

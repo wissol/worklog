@@ -8,11 +8,7 @@
 
 * I should be able to find entries within a range of time spent on a task.
 
-* I should be able to delete or edit entries.*
-
-* 
-
-* I should be able to navigate through the results of a search.
+* I should be able to delete or edit entries.
 
 
 DONE
@@ -29,3 +25,5 @@ DONE
 5. if finding by an exact string, I should be allowed to enter a string and then be presented with entries containing that string in the task name or notes.
 
 6. I should be able to quit the script from the menu.
+
+7. I should be able to navigate through the results of a search.
