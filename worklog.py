@@ -106,61 +106,49 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
             return task_index
 
     def show_previous_task(task_index):
-        if this_task == 0:
+        if task_index == 0:
             print("\a Sorry, this is the first task")
         else:
             task_index -= 1
             task_list[task_index].show_task()
         return task_index
 
-    def delete_task(task_to_del):
-        all_tasks = read_log_file()
-        for task_item in all_tasks:
-            print("1")
-            if task_to_del.description == task_item.description:
-                if task_to_del.task_date == task_item.task_date:
-                    print("HI")
-                    all_tasks.remove(task_item)
-        with open(WORK_LOG_FILE_NAME, 'w', newline='') as f:
-            writer = csv.writer(f)
-            for row in all_tasks:
-                writer.writerow([row.task_date, row.description, row.time_spent, row.notes])
-
-    def input_search_submenu():
-        submenu_items = ["n for next task", "p for previous tasks", "a for all tasks",
-                         "e to edit this task", "d to delete this task", "b back"]
+    def input_nav_menu():
+        submenu_items = ["n for next task", "p for previous tasks", "b back", "s select task"]
         for submenu_item in submenu_items:
             print(submenu_item)
 
         x = input("Choose :> ").strip().lower()
-        if x not in "npaedb":
-            return input_search_submenu()
+        if x not in "npbs":
+            return input_nav_menu()
         else:
             return x
 
-    def submenu(task_index, option):
+    def nav_menu(task_index):
+        option = input_nav_menu()
+
         if option == "n":
             task_index = show_next_task(task_index)
+            print(task_index)
         elif option == "p":
             task_index = show_previous_task(task_index)
         elif option == "a":
             show_all_tasks()
-        elif option == "d":
-            delete_task(task_list[task_index])
-        elif option == "-":
-            pass
+        elif option == "b":
+            return None, None
+        elif option == "s":
+            return task_index, True
         else:
             print("\a")
-        return task_index
+        return nav_menu(task_index)
 
     if task_list:
         task_list[0].show_task()
-        this_task = 0
-        option_chosen = "-"
-        while option_chosen != "b":
-            this_task = submenu(this_task, option_chosen)
-            option_chosen = input_search_submenu()
-
+        selected_task = nav_menu(0)
+        if selected_task[1]:
+            print("selected")
+            selected_task_index = selected_task[1]
+            task_list[selected_task_index].show_task()
     else:
         print(not_found_message)
 
