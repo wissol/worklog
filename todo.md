@@ -1,7 +1,6 @@
-# As an user of the script... 
 
 To Do
------
+=====
 
 * I should be able to find entries within a range of dates.
 

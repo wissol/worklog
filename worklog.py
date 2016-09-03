@@ -80,6 +80,7 @@ def read_log_file():
     :return: [Task]
     """
     with open(WORK_LOG_FILE_NAME, 'r', newline='') as rf:
+        print(WORK_LOG_FILE_NAME)
         task_log = []
         reader = csv.reader(rf)
         for row in reader:
@@ -112,23 +113,46 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
             task_list[task_index].show_task()
         return task_index
 
+    def delete_task(task_to_del):
+        print(task_to_del)
+        all_tasks = read_log_file()
+        print(all_tasks)
+        for task_item in all_tasks:
+            print(task_to_del.description, task_item.description, "ttdtitem")
+            task_to_del.show_task()
+            task_item.show_task()
+            print("=" * 8)
+            if task_to_del.description == task_item.description:
+                print("HI")
+                all_tasks.remove(task_item)
+                print(all_tasks)
+        with open(WORK_LOG_FILE_NAME, 'w', newline='') as f:
+            writer = csv.writer(f)
+            for row in all_tasks:
+                writer.writerow([row.task_date, row.description, row.time_spent, row.notes])
+
     if task_list:
         task_list[0].show_task()
         this_task = 0
-        option_chosen = input(
-            "Choose n for next task, p for previous tasks, a for all task, m for main menu").strip().lower()
-        while option_chosen != "m":
+        submenu_items = ["n for next task", "p for previous tasks", "a for all tasks",
+                         "e to edit this task", "d to delete this task", "b back"]
+        for submenu_item in submenu_items:
+            print(submenu_item)
+        option_chosen = input("Choose :> ").strip().lower()
+        while option_chosen != "b":
             if option_chosen == "n":
                 this_task = show_next_task(this_task)
             elif option_chosen == "p":
                 this_task = show_previous_task(this_task)
             elif option_chosen == "a":
                 show_all_tasks()
+            elif option_chosen == "d":
+                print("ddddd")
+                delete_task(task_list[this_task])
             else:
                 print("\a")
             option_chosen = input(
-                "Choose n for next task, p for previous tasks, a for all task, m for main menu").strip().lower()
-        main()
+                "Choose n for next task, p for previous tasks, a for all tasks:> ").strip().lower()
     else:
         print(not_found_message)
 
@@ -229,11 +253,11 @@ def append_task_to_log(task_entry):
         writer = csv.writer(f)
         writer.writerow(task_entry)
 
-
 # Search Functions
 
 def find_dates_with_tasks(tasks):
     dates_with_tasks = []
+
     for t in tasks:
         if t.task_date not in dates_with_tasks:
             dates_with_tasks.append(t.task_date)
@@ -259,6 +283,7 @@ def find_by_date():
     :return:
     """
     all_tasks = read_log_file()
+    print("at", all_tasks)
     found_tasks = []  # [Task]
     # show dates with task
     dates_that_have_tasks = show_dates_with_tasks(all_tasks)
@@ -275,9 +300,10 @@ def find_by_date():
 
         show_tasks(found_tasks, not_found_message="Sorry, no tasks found with that date")
 
-            # show a list of date
+
     else:
         print("Sorry no dates with task have been found.")
+
 
 def find_by_time_spent():
     """
@@ -295,6 +321,7 @@ def find_by_time_spent():
             found_tasks.append(task_item)
     # show list of tasks
     show_tasks(found_tasks)
+
 
 def find_by_exact_search():
     """
