@@ -6,7 +6,7 @@ To Do
 
 * I should be able to find entries within a range of time spent on a task.
 
-* I should be able to delete or edit entries.
+*  or edit entries.
 
 * Comment
 
@@ -43,3 +43,5 @@ name or notes.
 8. if finding by a pattern, I should be allowed to enter a regular 
 expression and then be presented with entries matching that pattern in 
 their task name or notes.
+
+9. I should be able to delete
