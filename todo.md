@@ -6,8 +6,6 @@ To Do
 
 * I should be able to find entries within a range of time spent on a task.
 
-*  or edit entries.
-
 * Comment
 
 * Refactor
@@ -45,3 +43,5 @@ expression and then be presented with entries matching that pattern in
 their task name or notes.
 
 9. I should be able to delete
+
+10. or edit entries. :)

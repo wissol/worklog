@@ -36,6 +36,9 @@ class Task():
         self.notes = literal_eval(notes)
         self.task_date = task_date
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
     def show_task(self):
         """
         Shows the Task on Screen
@@ -135,22 +138,26 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
         elif option == "a":
             show_all_tasks()
         elif option == "b":
-            return None, None
+            return None
         elif option == "s":
-            return task_index, True
+            print("Hi s", task_index)
+            return task_index
         else:
             print("\a")
         return nav_menu(task_index)
 
     if task_list:
         task_list[0].show_task()
-        selected_task = nav_menu(0)
-        if selected_task[1]:
-            print("selected")
-            selected_task_index = selected_task[1]
-            task_list[selected_task_index].show_task()
+        selected_task_index = nav_menu(0)
+        if isinstance(selected_task_index, int):
+            # selected_task_index can be zero
+            return task_list[selected_task_index]
+        else:
+            return None
     else:
         print(not_found_message)
+        return None
+
 
 # User Input and Validation
 
@@ -239,6 +246,7 @@ def input_date_to_search(validation_message, total_dates):
 
 # File Functions
 
+
 def append_task_to_log(task_entry):
     """
 
@@ -249,7 +257,26 @@ def append_task_to_log(task_entry):
         writer = csv.writer(f)
         writer.writerow(task_entry)
 
+
+def rewrite_log_file(tasks_list):
+    """
+
+    :param tasks_list:
+    :return:
+    """
+    tasks_to_save = []
+    for task in tasks_list:
+        task_date = task.task_date
+        task_description = task.description
+        task_time_spent = str(task.time_spent)
+        task_notes = str(task.notes)
+        tasks_to_save.append([task_date, task_description, task_time_spent, task_notes])
+        with open(WORK_LOG_FILE_NAME, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(tasks_to_save)
+
 # Search Functions
+
 
 def find_dates_with_tasks(tasks):
     dates_with_tasks = []
@@ -276,10 +303,9 @@ def show_dates_with_tasks(tasks):
 def find_by_date():
     """
 
-    :return:
+    :return: selected task, if any
     """
     all_tasks = read_log_file()
-    print("at", all_tasks)
     found_tasks = []  # [Task]
     # show dates with task
     dates_that_have_tasks = show_dates_with_tasks(all_tasks)
@@ -294,11 +320,12 @@ def find_by_date():
             if task_item.task_date == date_to_search:
                 found_tasks.append(task_item)
 
-        show_tasks(found_tasks, not_found_message="Sorry, no tasks found with that date")
-
+        selected_task = show_tasks(found_tasks, not_found_message="Sorry, no tasks found with that date")
+        return selected_task
 
     else:
         print("Sorry no dates with task have been found.")
+        return None
 
 
 def find_by_time_spent():
@@ -316,7 +343,8 @@ def find_by_time_spent():
         if int(time_spent_to_search) == int(task_item.time_spent):
             found_tasks.append(task_item)
     # show list of tasks
-    show_tasks(found_tasks)
+    selected_task = show_tasks(found_tasks)
+    return selected_task
 
 
 def find_by_exact_search():
@@ -339,8 +367,8 @@ def find_by_exact_search():
                 if string_to_search == note:
                     found_tasks.append(task_item)
 
-    show_tasks(found_tasks)
-
+    selected_task = show_tasks(found_tasks)
+    return selected_task
 
 def find_by_pattern():
     """
@@ -363,19 +391,10 @@ def find_by_pattern():
         if compiled_re_string.search(item_description) or compiled_re_string.search(item_notes):
             found_tasks.append(task_item)
 
-    # This code would check every attribute of the task class
-    #
-    # for task_item in all_tasks:
-    #     task_item_d = task_item.__dict__
-    #     for key in task_item_d:
-    #         if compiled_re_string.search(str(task_item_d[key])):
-    #             found_tasks.append(task_item)
-
     # show list of tasks
-    show_tasks(found_tasks)
+    selected_task = show_tasks(found_tasks)
+    return selected_task
 
-
-FIND_MENU_FUNCTIONS = {}
 
 # Command Functions
 
@@ -400,14 +419,66 @@ def search_entries():
                              "t": find_by_time_spent, "m": main, "q": quit}
     search_menu_items = {"p": "find pattern", "d": "find by date", "x": "find by exact match",
                          "t": "find by time spent", "m": "back to main menu", "q": "quit the script"}
-    menu(search_menu_functions, search_menu_items)
+    selected_task = search_menu(search_menu_functions, search_menu_items)
+    if selected_task:
+        delete_task_input = input("Delete task? y/N").strip()
+        if delete_task_input == "y":
+            delete_task(selected_task)
+        else:
+            edit_task(selected_task)
+    main()
 
-def edit_entry():
-    print("edit_entry")
+
+def edit_task(selected_task):
+    print(selected_task.description)
+    new_description = input("Change description? y/N").strip().lower()
+    if new_description == "y":
+        new_description = input("New description:> ")
+    else:
+        new_description = selected_task.description
+
+    print(selected_task.task_date)
+    new_date = input("Change date? y/N").strip().lower()
+    if new_date == "y":
+        new_date = input_task_date("")
+    else:
+        new_date = selected_task.task_date
+
+    print(selected_task.time_spent)
+    new_time_spent = input("Change time spent? y/N").strip().lower()
+    if new_time_spent == "y":
+        new_time_spent = input_time_spent("")
+    else:
+        new_time_spent = selected_task.time_spent
+
+    for note in selected_task.notes:
+        print(note)
+    new_notes = input("Change notes? y/N").strip().lower()
+    if new_notes == "y":
+        new_notes = input_task_notes([])
+    else:
+        new_notes = selected_task.notes
+
+    new_task = Task(new_description, new_time_spent, str(new_notes), new_date)
+
+    all_tasks = read_log_file()
+    all_tasks.remove(selected_task)
+    all_tasks.append(new_task)
+    rewrite_log_file(all_tasks)
 
 
-def delete_entry():
-    print("delete entry")
+def delete_task(task_to_delete):
+    print("We will delete this entry")
+    task_to_delete.show_task()
+    sure = input("Are you sure? y/N").strip()
+    if sure == "y":
+        all_tasks = read_log_file()
+        for task in all_tasks:
+            if task == task_to_delete:
+                all_tasks.remove(task)
+                break
+        # buckup file?
+        rewrite_log_file(all_tasks)
 
 
 def ask_for_choice(error_message, menu_choices):
@@ -437,8 +508,16 @@ def ask_for_choice(error_message, menu_choices):
         return choice
 
 
-def helper():
-    print("To edit or delete an entry you must search it first")
+def search_menu(menu_functions, menu_items):
+    """
+
+    :param menu_functions:
+    :param menu_items:
+    :return:
+    """
+    while True:
+        user_choice = ask_for_choice("", menu_items)
+        return menu_functions[user_choice]()
 
 
 def menu(menu_functions, menu_items):
@@ -450,13 +529,12 @@ def menu(menu_functions, menu_items):
     """
     while True:
         user_choice = ask_for_choice("", menu_items)
-        print(user_choice)
         menu_functions[user_choice]()
 
 
 def main():
-    main_menu_functions = {"a": add_entry, "f": search_entries, "q": exit, "h": helper}
-    main_menu_items = {"a": "add entry", "f": "search entries", "q": "quit", "h": "help"}
+    main_menu_functions = {"a": add_entry, "f": search_entries, "q": exit}
+    main_menu_items = {"a": "add entry", "f": "search entries", "q": "quit"}
 
     menu(main_menu_functions, main_menu_items)
 
