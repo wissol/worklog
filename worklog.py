@@ -278,13 +278,35 @@ def rewrite_log_file(tasks_list):
 # Search Functions
 
 
+def order_dates(dates_list):
+    """
+    Orders a list of dates, formated as strings,
+
+    :param dates_list: string
+    :return: string
+    """
+    dates_as_datetimes = []
+    for date_item in dates_list:
+        dates_as_datetimes.append(datetime.strptime(date_item, DATE_FORMAT))
+
+    dates_list = []
+
+    dates_as_datetimes = sorted(dates_as_datetimes)
+
+    for d in dates_as_datetimes:
+        dates_list.append(d.strftime(DATE_FORMAT))
+
+    return dates_list
+
+
 def find_dates_with_tasks(tasks):
     dates_with_tasks = []
 
     for t in tasks:
         if t.task_date not in dates_with_tasks:
             dates_with_tasks.append(t.task_date)
-    return dates_with_tasks
+
+    return order_dates(dates_with_tasks)
 
 
 def show_dates_with_tasks(tasks):
@@ -314,14 +336,14 @@ def find_by_date():
         range_dates = input("Do you want to search for entries within a range of dates? (y/N)>: ").strip().lower()
         if range_dates == "y":
             f_date_index = input_date_to_search("Enter the index of the first date", len(dates_that_have_tasks) - 1)
-            s_date_index = input_date_to_search("Enter the index of the first date", len(dates_that_have_tasks) - 1)
+            s_date_index = input_date_to_search("Enter the index of the second date", len(dates_that_have_tasks) - 1)
             f_date_to_search = dates_that_have_tasks[f_date_index]
             s_date_to_search = dates_that_have_tasks[s_date_index]
             f_date_to_search = datetime.strptime(f_date_to_search, DATE_FORMAT)
             s_date_to_search = datetime.strptime(s_date_to_search, DATE_FORMAT)
             for task_item in all_tasks:
-                if datetime.strptime(task_item.task_date, DATE_FORMAT) <= f_date_to_search:
-                    if datetime.strptime(task_item.task_date, DATE_FORMAT) >= s_date_to_search:
+                if datetime.strptime(task_item.task_date, DATE_FORMAT) >= f_date_to_search:
+                    if datetime.strptime(task_item.task_date, DATE_FORMAT) <= s_date_to_search:
                         found_tasks.append(task_item)
 
         else:

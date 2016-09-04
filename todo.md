@@ -2,7 +2,7 @@
 To Do
 =====
 
-* I should be able to find entries within a range of dates.
+
 
 * I should be able to find entries within a range of time spent on a task.
 
@@ -45,3 +45,7 @@ their task name or notes.
 9. I should be able to delete
 
 10. or edit entries. :)
+
+11. I should be able to find entries within a range of dates.
+
+12. Dates are now shown ordered, even if they were entered randomly :)
