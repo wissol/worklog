@@ -2,15 +2,11 @@
 To Do
 =====
 
-
-
-* I should be able to find entries within a range of time spent on a task.
+* Polish UI
 
 * Comment
 
 * Refactor
-
-* Polish UI
 
 
 DONE
@@ -49,3 +45,6 @@ their task name or notes.
 11. I should be able to find entries within a range of dates.
 
 12. Dates are now shown ordered, even if they were entered randomly :)
+
+13. I should be able to find entries within a range of time spent on a 
+task.

@@ -369,14 +369,24 @@ def find_by_time_spent():
     :return:
     """
     found_tasks = []
+    all_tasks = read_log_file()
     # ask for user input
     # validate
-    time_spent_to_search = input_time_spent("")
-    all_tasks = read_log_file()
-    # search
-    for task_item in all_tasks:
-        if int(time_spent_to_search) == int(task_item.time_spent):
-            found_tasks.append(task_item)
+    r_time = input("Do you want to find entries within a range of time spent on a task? y/N").strip().lower()
+    if r_time == "y":
+        f_time_spent = input_time_spent("Enter the smaller item of the range:> ")
+        s_time_spent = input_time_spent("Enter the larger item of the range:> ")
+        for task_item in all_tasks:
+            tits = int(task_item.time_spent)  # tits ^_^
+            print(f_time_spent, s_time_spent, tits)
+            if f_time_spent <= tits and s_time_spent >= tits:
+                found_tasks.append(task_item)
+    else:
+        time_spent_to_search = input_time_spent("")
+        # search
+        for task_item in all_tasks:
+            if int(time_spent_to_search) == int(task_item.time_spent):
+                found_tasks.append(task_item)
     # show list of tasks
     selected_task = show_tasks(found_tasks)
     return selected_task
@@ -404,6 +414,7 @@ def find_by_exact_search():
 
     selected_task = show_tasks(found_tasks)
     return selected_task
+
 
 def find_by_pattern():
     """
