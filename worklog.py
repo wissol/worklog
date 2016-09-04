@@ -307,18 +307,31 @@ def find_by_date():
     """
     all_tasks = read_log_file()
     found_tasks = []  # [Task]
-    # show dates with task
+    # show dates with tasks
     dates_that_have_tasks = show_dates_with_tasks(all_tasks)
-    # ask user for date
-    if dates_that_have_tasks:
-        date_index = input_date_to_search("", len(dates_that_have_tasks) - 1)
-        date_to_search = dates_that_have_tasks[date_index]
 
-        # validate
-        # search
-        for task_item in all_tasks:
-            if task_item.task_date == date_to_search:
-                found_tasks.append(task_item)
+    if dates_that_have_tasks:
+        range_dates = input("Do you want to search for entries within a range of dates? (y/N)>: ").strip().lower()
+        if range_dates == "y":
+            f_date_index = input_date_to_search("Enter the index of the first date", len(dates_that_have_tasks) - 1)
+            s_date_index = input_date_to_search("Enter the index of the first date", len(dates_that_have_tasks) - 1)
+            f_date_to_search = dates_that_have_tasks[f_date_index]
+            s_date_to_search = dates_that_have_tasks[s_date_index]
+            f_date_to_search = datetime.strptime(f_date_to_search, DATE_FORMAT)
+            s_date_to_search = datetime.strptime(s_date_to_search, DATE_FORMAT)
+            for task_item in all_tasks:
+                if datetime.strptime(task_item.task_date, DATE_FORMAT) <= f_date_to_search:
+                    if datetime.strptime(task_item.task_date, DATE_FORMAT) >= s_date_to_search:
+                        found_tasks.append(task_item)
+
+        else:
+            date_index = input_date_to_search("", len(dates_that_have_tasks) - 1)
+            date_to_search = dates_that_have_tasks[date_index]
+
+            # search
+            for task_item in all_tasks:
+                if task_item.task_date == date_to_search:
+                    found_tasks.append(task_item)
 
         selected_task = show_tasks(found_tasks, not_found_message="Sorry, no tasks found with that date")
         return selected_task

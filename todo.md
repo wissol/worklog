@@ -17,7 +17,7 @@ DONE
 ====
 
 1. I should be able to choose whether to add a new entry or lookup 
-previous entries. --- done 
+previous entries. 
 
 2. if I choose to find a previous entry, I should be presented with four 
 options: find by date, time spent, find by exact search, find by 
