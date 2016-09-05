@@ -101,7 +101,7 @@ def read_log_file():
             this_task = Task(task_date=row[0], description=row[1],
                              time_spent=row[2], notes=row[3])
             task_log.append(this_task)
-    if not task_log:  # empty file?
+    if not task_log:  # empty file?'
         print("\n\a\t*** Sorry the log file seems empty. *** \n")
     return task_log
 
