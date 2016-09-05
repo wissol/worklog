@@ -95,13 +95,14 @@ def read_log_file():
     :return: [Task]
     """
     with open(WORK_LOG_FILE_NAME, 'r', newline='') as rf:
-        print(WORK_LOG_FILE_NAME)
         task_log = []
         reader = csv.reader(rf)
         for row in reader:
             this_task = Task(task_date=row[0], description=row[1],
                              time_spent=row[2], notes=row[3])
             task_log.append(this_task)
+    if not task_log:
+        print("\n\a\t*** Sorry the log file seems empty. *** \n")
     return task_log
 
 
