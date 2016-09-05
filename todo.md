@@ -1,14 +1,3 @@
-
-To Do
-=====
-
-* Polish UI
-
-* Comment
-
-* Refactor
-
-
 DONE
 ====
 
@@ -51,3 +40,13 @@ task.
 
 14. - Instead of having notes in a list of strings, I'm having them all
 in one single string separated by \n characters
+
+15. Polish UI
+
+16. Comment
+
+17. Refactor
+
+18. Allows for alternative date input
+
+Ready or not, it's submit time! :) crossed fingers and toes

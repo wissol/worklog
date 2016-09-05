@@ -27,7 +27,7 @@ class Task():
 
         :param description: string ... Task description
         :param time_spent: integer ... Time spent on the task in minutes
-        :param notes: [string] Notes ... Can be empty
+        :param notes: string Notes ... Can be empty
         :param task_date: datetime ... either supplied by the logger or supplied by the system
         """
         self.description = description
@@ -41,7 +41,7 @@ class Task():
     def show_task(self):
         """
         Shows the Task on Screen
-        :return:
+        :return: None
         """
         print("\v")
         print("-" * 12)
@@ -73,13 +73,18 @@ def clear_screen():
 
 def get_task_date():
     """
-    generates date from datetime
+    generates today's date from system clock
     :return: string ... "dd/mm/yyyy"
     """
     return datetime.today().strftime(DATE_FORMAT)
 
 
 def show_validation_message(validation_message):
+    """
+    Shows a validation message, if any
+    :param validation_message: string
+    :return:
+    """
     if validation_message:
         print("\a\v\t " + validation_message)
 
@@ -101,12 +106,23 @@ def read_log_file():
 
 
 def show_tasks(task_list, not_found_message="Sorry, not tasks to show.\v"):
+    """
+    Show the tasks of a task list, allows navigation, returns selected task if any
+    :param task_list: [Task]
+    :param not_found_message: string
+    :return: Task ... selected task, if any or None
+    """
 
     def show_next_task(task_index):
+        """
+        Shows next task, and add pagination
+        :param task_index: integer
+        :return: integer ... updated task integer
+        """
         task_index += 1
         try:
             task_list[task_index].show_task()
-            print("Task {} of {}\v".format(task_index + 1, len(task_list)))
+            print("Task {} of {}\n".format(task_index + 1, len(task_list)))
             return task_index
         except:
             print("\a Sorry, no more tasks to show.\v")
@@ -114,15 +130,24 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show.\v"):
             return task_index
 
     def show_previous_task(task_index):
+        """
+        Shows previous task, and add pagination
+        :param task_index: integer
+        :return: integer ... updated task integer
+        """
         if task_index == 0:
             print("\a Sorry, this is the first task.\v")
         else:
             task_index -= 1
             task_list[task_index].show_task()
-            print("Task {} of {}\v".format(task_index + 1, len(task_list)))
+            print("Task {} of {}\n".format(task_index + 1, len(task_list)))
         return task_index
 
     def input_nav_menu():
+        """
+        Handles the navigation menu input
+        :return: character ... user choice
+        """
         nav_menu_items = ["n for next task", "p for previous tasks", "b back", "s select task"]
         for nav_menu_item in nav_menu_items:
             print(nav_menu_item)
@@ -134,6 +159,11 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show.\v"):
             return x
 
     def nav_menu(task_index):
+        """
+        Handles the navigation menu
+        :param task_index: integer
+        :return: Calls the appropiate function
+        """
         option = input_nav_menu()
 
         if option == "n":
@@ -150,7 +180,7 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show.\v"):
 
     if task_list:
         task_list[0].show_task()
-        print("Task {} of {}".format(1, len(task_list)))
+        print("Task {} of {}\n".format(1, len(task_list)))
         selected_task_index = nav_menu(0)
         if isinstance(selected_task_index, int):
             # selected_task_index can be zero
@@ -173,10 +203,36 @@ def input_task_date(validation_message):
 
     show_validation_message(validation_message)
 
-    raw_task_date = input("Please enter the date for this task as dd/mm/yyyy or press enter for today:> ") \
-        .replace(" ", "").strip()
+    raw_task_date = input("Please enter the date for this task. Enter help for help:> ") \
+        .replace(" ", "").replace(".", "/").replace("-", "/").strip("").lower()
+    # some countries use . for the / https://en.wikipedia.org/wiki/Date_format_by_country
+
+    if raw_task_date == "help":
+        help_message = """
+Enter dates as dd/mm/yyyy.
+    * If you want to use the alternative format of mm/dd/yyyy write the letter M before your date as in M12/23/2016.
+
+    * If you want to use the alternative format of yyyy/mm/dd write the letter Y before the date as in Y2016/12/23.
+
+    * You may also substitute / for . or - with or without spaces
+        """
+        return input_task_date(help_message)
 
     if raw_task_date:
+        if raw_task_date[0] == "m":
+            month = raw_task_date[1:3]
+            day = raw_task_date[4:6]
+            year = raw_task_date[7:]
+            raw_task_date = "{}/{}/{}".format(day, month, year)
+        elif raw_task_date[0] == "y":
+            year = raw_task_date[1:5]
+            month = raw_task_date[6:8]
+            day = raw_task_date[9:]
+            raw_task_date = "{}/{}/{}".format(day, month, year)
+            print(raw_task_date)
+        else:
+            pass
+
         try:
             datetime.strptime(raw_task_date, DATE_FORMAT)
             # The idea is to use strptime to raise a Value Error if the string provided does not conform to
@@ -190,11 +246,11 @@ def input_task_date(validation_message):
 
 def input_task_notes(task_notes):
     """
-    Generates a string with all the notes associated to a task
+    Generates a string with all the notes associated to a task separated by new lines characters
     :param task_notes: string
-    :return: string
+    :return: string ... task notes
     """
-    my_note = input("Add a new line for the notes of this task, if any or hit enter to end adding notes:> ")
+    my_note = input("Add a new line for the notes of this task, if any or hit enter to stop adding notes:> ")
     if not my_note:
         return task_notes
     else:
@@ -225,9 +281,9 @@ def input_time_spent(validation_message):
 def input_date_to_search(validation_message, total_dates):
     """
     Ask for input for the date to choose among those offered. The rationale for this function is that it's much
-    faster to type an index number than a date.
-    :param validation_message:
-    :param total_dates:
+    faster and less error prone to type an index number rather than a date.
+    :param validation_message: string
+    :param total_dates: integer ... number of different dates that have tasks
     :return:
     """
     show_validation_message(validation_message)
@@ -252,8 +308,8 @@ def input_date_to_search(validation_message, total_dates):
 
 def append_task_to_log(task_entry):
     """
-
-    :param task_entry:
+    Appends a task to the log
+    :param task_entry: string
     :return:
     """
     with open(WORK_LOG_FILE_NAME, 'a', newline='') as f:
@@ -263,8 +319,8 @@ def append_task_to_log(task_entry):
 
 def rewrite_log_file(tasks_list):
     """
-
-    :param tasks_list:
+    rewrites the log file with new data
+    :param tasks_list: string
     :return:
     """
     tasks_to_save = []
@@ -303,6 +359,12 @@ def order_dates(dates_list):
 
 
 def find_dates_with_tasks(tasks):
+    """
+    Find the dates that have tasks, returns a list of strings that represent such dates, ordered as dates should be
+    ordered
+    :param tasks: [Task]
+    :return: [string] ... dates that have tasks
+    """
     dates_with_tasks = []
 
     for t in tasks:
@@ -313,6 +375,12 @@ def find_dates_with_tasks(tasks):
 
 
 def show_dates_with_tasks(tasks):
+    """
+    Shows the dates that have tasks
+    :param tasks: [Task]
+    :return: [string] ... dates that have tasks
+    """
+    clear_screen()
     dates_with_tasks = find_dates_with_tasks(tasks)
     if dates_with_tasks:
         print("These are the dates that have tasks")
@@ -327,7 +395,7 @@ def show_dates_with_tasks(tasks):
 
 def find_by_date():
     """
-
+    Handles the searching by date
     :return: selected task, if any
     """
     all_tasks = read_log_file()
@@ -336,10 +404,11 @@ def find_by_date():
     dates_that_have_tasks = show_dates_with_tasks(all_tasks)
 
     if dates_that_have_tasks:
-        range_dates = input("Do you want to search for entries within a range of dates? (y/N)>: ").strip().lower()
+        range_dates = input("\nDo you want to search for entries within a range of dates? (y/N)>: ").strip().lower()
         if range_dates == "y":
-            f_date_index = input_date_to_search("Enter the index of the first date", len(dates_that_have_tasks) - 1)
-            s_date_index = input_date_to_search("Enter the index of the second date", len(dates_that_have_tasks) - 1)
+            f_date_index = input_date_to_search("\n1. Enter the index of the first date",
+                                                len(dates_that_have_tasks) - 1)
+            s_date_index = input_date_to_search("2. Enter the index of the second date", len(dates_that_have_tasks) - 1)
             f_date_to_search = dates_that_have_tasks[f_date_index]
             s_date_to_search = dates_that_have_tasks[s_date_index]
             f_date_to_search = datetime.strptime(f_date_to_search, DATE_FORMAT)
@@ -368,21 +437,19 @@ def find_by_date():
 
 def find_by_time_spent():
     """
-
-    :return:
+    Handles finding Tasks by time spent on them
+    :return: Task ... selected Task, if any
     """
     found_tasks = []
     all_tasks = read_log_file()
-    # ask for user input
-    # validate
-    r_time = input("Do you want to find entries within a range of time spent on a task? y/N").strip().lower()
+    r_time = input("\nDo you want to find entries within a range of time spent on a task? y/N").strip().lower()
     if r_time == "y":
-        f_time_spent = input_time_spent("Enter the smaller item of the range:> ")
-        s_time_spent = input_time_spent("Enter the larger item of the range:> ")
+        f_time_spent = input_time_spent("\n 1. Enter the smaller item of the range:> ")
+        s_time_spent = input_time_spent("2. Enter the larger item of the range:> ")
         for task_item in all_tasks:
             tits = int(task_item.time_spent)  # tits ^_^
             print(f_time_spent, s_time_spent, tits)
-            if f_time_spent <= tits and s_time_spent >= tits:
+            if f_time_spent <= tits <= s_time_spent:
                 found_tasks.append(task_item)
     else:
         time_spent_to_search = input_time_spent("")
@@ -397,11 +464,11 @@ def find_by_time_spent():
 
 def find_by_exact_search():
     """
-
-    :return:
+    Handles searching Task by exact search.
+    :return: Task ... selected Task if any
     """
     found_tasks = []
-    string_to_search = input("Enter the exact words that you want to find:> ").strip()
+    string_to_search = input("\nEnter the exact words that you want to find:> ").strip().strip("\n")
     # ask for user input
 
     all_tasks = read_log_file()
@@ -420,12 +487,12 @@ def find_by_exact_search():
 
 def find_by_pattern():
     """
-
-    :return:
+    Handles searching Task by RegEx patter.
+    :return: Task ... selected Task if any
     """
     import re
     found_tasks = []
-    raw_re_string = input("Enter your Regular Expression pattern")
+    raw_re_string = input("\nEnter your Regular Expression pattern")
     # ask for user input
     compiled_re_string = re.compile(raw_re_string)
     print(compiled_re_string)
@@ -448,12 +515,13 @@ def find_by_pattern():
 
 def add_entry():
     """
-    Adds an entry
-    :return:
+    Adds an entry based on user input
+    :return: Calls append_task_to_log, appending it to the log
     """
+    clear_screen()
     task_description = input("Task Description:> ")
     time_spent = input_time_spent("")
-    task_notes = input_task_notes("")
+    task_notes = input_task_notes("").strip()
     task_date = input_task_date("")
 
     append_task_to_log([task_date, task_description, time_spent, task_notes])
@@ -462,8 +530,11 @@ def add_entry():
 
 
 def search_entries():
+    """
+    Searches for an entry, based on a sub-menu
+    :return: Calls the appropriate function to edit of deleted any selected task
+    """
     clear_screen()
-    print("Search entry")
     search_menu_functions = {"p": find_by_pattern, "d": find_by_date, "x": find_by_exact_search,
                              "t": find_by_time_spent, "m": main, "q": quit}
     search_menu_items = {"p": "find pattern", "d": "find by date", "x": "find by exact match",
@@ -478,46 +549,56 @@ def search_entries():
     main()
 
 
-def edit_task(selected_task):
-    print(selected_task.description)
-    new_description = input("Change description? y/N").strip().lower()
+def edit_task(task_to_edit):
+    """
+    Edites the selected Task, based on user input
+    :param task_to_edit: Task
+    :return: Calls rewrite_log
+    """
+    print(task_to_edit.description)
+    new_description = input("\n\tChange description? y/N").strip().lower()
     if new_description == "y":
-        new_description = input("New description:> ")
+        new_description = input("\n\tNew description:> ")
     else:
-        new_description = selected_task.description
+        new_description = task_to_edit.description
 
-    print(selected_task.task_date)
-    new_date = input("Change date? y/N").strip().lower()
+    print(task_to_edit.task_date)
+    new_date = input("\n\tChange date? y/N").strip().lower()
     if new_date == "y":
         new_date = input_task_date("")
     else:
-        new_date = selected_task.task_date
+        new_date = task_to_edit.task_date
 
-    print(selected_task.time_spent)
-    new_time_spent = input("Change time spent? y/N").strip().lower()
+    print(task_to_edit.time_spent)
+    new_time_spent = input("\n\tChange time spent? y/N").strip().lower()
     if new_time_spent == "y":
         new_time_spent = input_time_spent("")
     else:
-        new_time_spent = selected_task.time_spent
+        new_time_spent = task_to_edit.time_spent
 
-    for note in selected_task.notes:
+    for note in task_to_edit.notes:
         print(note)
-    new_notes = input("Change notes? y/N").strip().lower()
+    new_notes = input("\n\tChange notes? y/N").strip().lower()
     if new_notes == "y":
         new_notes = input_task_notes("")
     else:
-        new_notes = selected_task.notes
+        new_notes = task_to_edit.notes
 
     new_task = Task(new_description, new_time_spent, new_notes, new_date)
 
     all_tasks = read_log_file()
-    all_tasks.remove(selected_task)
+    all_tasks.remove(task_to_edit)
     all_tasks.append(new_task)
     rewrite_log_file(all_tasks)
 
 
 def delete_task(task_to_delete):
-    print("We will delete this entry")
+    """
+    Deletes the selected Task, after confirmation
+    :param task_to_delete: Task
+    :return: Calls rewrite_log
+    """
+    print("I am going to delete this entry")
     task_to_delete.show_task()
     sure = input("Are you sure? y/N").strip()
     if sure == "y":
@@ -559,10 +640,10 @@ def ask_for_choice(error_message, menu_choices):
 
 def search_menu(menu_functions, menu_items):
     """
-
-    :param menu_functions:
-    :param menu_items:
-    :return:
+    Handles the search menu, pretty much like menu
+    :param menu_functions: dictionary character:function name ... menu functions
+    :param menu_items: dictionary character:string ... contains strings with the menu items
+    :return: returns a calls to a function so it can pass whatever it returns
     """
     while True:
         user_choice = ask_for_choice("", menu_items)
@@ -571,10 +652,10 @@ def search_menu(menu_functions, menu_items):
 
 def menu(menu_functions, menu_items):
     """
-
-    :param menu_functions: dictionary ... menu functions
-    :param menu_items: dictionary ... contains strings with the menu items
-    :return:
+    Handles the main menu
+    :param menu_functions: dictionary character:function name ... menu functions
+    :param menu_items: dictionary character:string ... contains strings with the menu items
+    :return: just calls a function
     """
     while True:
         user_choice = ask_for_choice("", menu_items)
@@ -582,6 +663,10 @@ def menu(menu_functions, menu_items):
 
 
 def main():
+    """
+    Main
+    :return: Calls menu
+    """
     main_menu_functions = {"a": add_entry, "f": search_entries, "q": exit}
     main_menu_items = {"a": "add entry", "f": "search entries", "q": "quit"}
 
