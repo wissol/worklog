@@ -48,3 +48,6 @@ their task name or notes.
 
 13. I should be able to find entries within a range of time spent on a 
 task.
+
+14. - Instead of having notes in a list of strings, I'm having them all
+in one single string separated by \n characters

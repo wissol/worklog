@@ -7,7 +7,6 @@ Started on 260816
 
 """
 import csv
-from ast import literal_eval  # evaluates literal expressions
 from datetime import datetime
 from sys import exit
 
@@ -33,7 +32,7 @@ class Task():
         """
         self.description = description
         self.time_spent = time_spent
-        self.notes = literal_eval(notes)
+        self.notes = notes
         self.task_date = task_date
 
     def __eq__(self, other):
@@ -44,12 +43,20 @@ class Task():
         Shows the Task on Screen
         :return:
         """
-        print("Task Date", self.task_date)
-        print("Description", self.description)
-        print("Time Spent", self.time_spent)
-        print("Notes")
-        for note in self.notes:
-            print("*", note)
+        print("\v")
+        print("-" * 12)
+        print("Task Date:", self.task_date)
+        print("Description:", self.description)
+        print("Time Spent:", self.time_spent)
+        print("\v")
+        if self.notes:
+            print("Notes")
+            print("----")
+            print(self.notes)
+        else:
+            print("Task without notes")
+        print("")
+        print("=" * 12)
         print("\v")
 
 
@@ -93,33 +100,32 @@ def read_log_file():
     return task_log
 
 
-def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
-    def show_all_tasks():
-        for task_list_item in task_list:
-            task_list_item.show_task()
+def show_tasks(task_list, not_found_message="Sorry, not tasks to show.\v"):
 
     def show_next_task(task_index):
         task_index += 1
         try:
             task_list[task_index].show_task()
+            print("Task {} of {}\v".format(task_index + 1, len(task_list)))
             return task_index
         except:
-            print("\a Sorry, no more tasks to show")
+            print("\a Sorry, no more tasks to show.\v")
             task_index -= 1
             return task_index
 
     def show_previous_task(task_index):
         if task_index == 0:
-            print("\a Sorry, this is the first task")
+            print("\a Sorry, this is the first task.\v")
         else:
             task_index -= 1
             task_list[task_index].show_task()
+            print("Task {} of {}\v".format(task_index + 1, len(task_list)))
         return task_index
 
     def input_nav_menu():
-        submenu_items = ["n for next task", "p for previous tasks", "b back", "s select task"]
-        for submenu_item in submenu_items:
-            print(submenu_item)
+        nav_menu_items = ["n for next task", "p for previous tasks", "b back", "s select task"]
+        for nav_menu_item in nav_menu_items:
+            print(nav_menu_item)
 
         x = input("Choose :> ").strip().lower()
         if x not in "npbs":
@@ -132,15 +138,11 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
 
         if option == "n":
             task_index = show_next_task(task_index)
-            print(task_index)
         elif option == "p":
             task_index = show_previous_task(task_index)
-        elif option == "a":
-            show_all_tasks()
         elif option == "b":
             return None
         elif option == "s":
-            print("Hi s", task_index)
             return task_index
         else:
             print("\a")
@@ -148,6 +150,7 @@ def show_tasks(task_list, not_found_message="Sorry, not tasks to show"):
 
     if task_list:
         task_list[0].show_task()
+        print("Task {} of {}".format(1, len(task_list)))
         selected_task_index = nav_menu(0)
         if isinstance(selected_task_index, int):
             # selected_task_index can be zero
@@ -187,15 +190,15 @@ def input_task_date(validation_message):
 
 def input_task_notes(task_notes):
     """
-    Generates a collection with all the notes associated to a task
-    :param task_notes: [string]
-    :return: [string]
+    Generates a string with all the notes associated to a task
+    :param task_notes: string
+    :return: string
     """
-    my_note = input("Add a note for this task, if any or hit enter to end adding notes:> ")
+    my_note = input("Add a new line for the notes of this task, if any or hit enter to end adding notes:> ")
     if not my_note:
         return task_notes
     else:
-        task_notes.append(my_note)
+        task_notes += my_note + "\n"
         return input_task_notes(task_notes)
 
 
@@ -269,7 +272,7 @@ def rewrite_log_file(tasks_list):
         task_date = task.task_date
         task_description = task.description
         task_time_spent = str(task.time_spent)
-        task_notes = str(task.notes)
+        task_notes = task.notes
         tasks_to_save.append([task_date, task_description, task_time_spent, task_notes])
         with open(WORK_LOG_FILE_NAME, 'w', newline='') as f:
             writer = csv.writer(f)
@@ -408,9 +411,8 @@ def find_by_exact_search():
         if string_to_search == task_item.description:
             found_tasks.append(task_item)
         else:
-            for note in task_item.notes:
-                if string_to_search == note:
-                    found_tasks.append(task_item)
+            if string_to_search == task_item.notes.strip("\n"):
+                found_tasks.append(task_item)
 
     selected_task = show_tasks(found_tasks)
     return selected_task
@@ -432,7 +434,7 @@ def find_by_pattern():
 
     for task_item in all_tasks:
         item_description = task_item.description
-        item_notes = str(task_item.notes).strip("[]").strip("'")  # The list is converted into a string
+        item_notes = task_item.notes
 
         if compiled_re_string.search(item_description) or compiled_re_string.search(item_notes):
             found_tasks.append(task_item)
@@ -451,7 +453,7 @@ def add_entry():
     """
     task_description = input("Task Description:> ")
     time_spent = input_time_spent("")
-    task_notes = input_task_notes([])
+    task_notes = input_task_notes("")
     task_date = input_task_date("")
 
     append_task_to_log([task_date, task_description, time_spent, task_notes])
@@ -460,7 +462,8 @@ def add_entry():
 
 
 def search_entries():
-    print("search entry")
+    clear_screen()
+    print("Search entry")
     search_menu_functions = {"p": find_by_pattern, "d": find_by_date, "x": find_by_exact_search,
                              "t": find_by_time_spent, "m": main, "q": quit}
     search_menu_items = {"p": "find pattern", "d": "find by date", "x": "find by exact match",
@@ -501,11 +504,11 @@ def edit_task(selected_task):
         print(note)
     new_notes = input("Change notes? y/N").strip().lower()
     if new_notes == "y":
-        new_notes = input_task_notes([])
+        new_notes = input_task_notes("")
     else:
         new_notes = selected_task.notes
 
-    new_task = Task(new_description, new_time_spent, str(new_notes), new_date)
+    new_task = Task(new_description, new_time_spent, new_notes, new_date)
 
     all_tasks = read_log_file()
     all_tasks.remove(selected_task)
